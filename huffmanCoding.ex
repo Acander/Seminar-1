@@ -40,7 +40,7 @@ defmodule Huffman do
     #IO.inspect(seq)
     #to_string(decode(seq, decode))
     {d, t5} = time(fn -> decode(seq, decode) end)
-    to_string(d)
+    IO.inspect(to_string(d))
     IO.inspect("tree #{t1}")
     IO.inspect("encodeTable #{t2}")
     IO.inspect(t3)
@@ -54,17 +54,19 @@ defmodule Huffman do
     huffman(freq)
   end
 
+  #freq: Iterates through the sample and adds to the frequency list (containing tuples, with a character and its
+  #frequency). UpdateFreq iterates through the list of characters created of the sample when iterated through
   def freq(sample) do freq(sample, []) end
   def freq([], freq) do freq end
   def freq([char | rest], freq) do
     freq(rest, updateFreq(char, freq))
   end
 
-  def updateFreq(char, []) do [{char, 1}] end
-  def updateFreq(char, [{char, n}|restFreq]) do
+  def updateFreq(char, []) do [{char, 1}] end #Creates a new tuple if the character is new
+  def updateFreq(char, [{char, n}|restFreq]) do #Updates the frequency for a character
     [{char, n + 1} | restFreq]
   end
-  def updateFreq(char, [otherChar|restFreq]) do
+  def updateFreq(char, [otherChar|restFreq]) do #Continues searching if the characters does not match
     [otherChar | updateFreq(char, restFreq)]
   end
 
@@ -73,6 +75,8 @@ defmodule Huffman do
     huffman_tree(sorted)
   end
 
+  #Creates a node with leaves (with two elements) and then inserts the element (with insert) in the corect place
+  #in the frequency list. When we are finished we have a Huffman tree
   def huffman_tree([{tree, _}]), do: tree
   def huffman_tree([{a, aFreq}, {b, bFreq}|rest]) do
     huffman_tree(insert({{a, b}, aFreq + bFreq}, rest))
@@ -86,6 +90,7 @@ defmodule Huffman do
     [{b, bFreq} | insert({a, aFreq}, rest)]
   end
 
+  #Encode tables 
   def encode_table(tree) do
     search(tree, [], [])
   end
